@@ -7,13 +7,13 @@ help: ## Show this help message
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-20s %s\n", $$1, $$2}'
 
 install-air: ## Install Air for hot-reloading
-	@which air > /dev/null || (echo "Installing air..." && go install github.com/air-verse/air@latest)
+	@which air > /dev/null || (echo "Installing air..." && go install github.com/air-verse/air@latest && echo "Air installed to $(shell go env GOPATH)/bin/air")
 
 dev-api: install-air ## Run API server with hot-reloading
-	air -c .air.toml
+	$(shell go env GOPATH)/bin/air -c .air.toml
 
 dev-worker: install-air ## Run worker with hot-reloading
-	air -c .air.worker.toml
+	$(shell go env GOPATH)/bin/air -c .air.worker.toml
 
 dev: ## Run both API and worker with hot-reloading (in parallel)
 	@echo "Starting API and Worker in development mode..."
