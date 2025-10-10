@@ -1,7 +1,7 @@
 package database
 
 import (
-	"aolus-software/clean-gofiber/config"
+	"aolus-software/clean-gofiber/internal/config"
 	"fmt"
 	"log"
 

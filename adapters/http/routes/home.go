@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"aolus-software/clean-gofiber/config"
+	"aolus-software/clean-gofiber/internal/config"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -13,7 +13,7 @@ func HomeRoutes(app *fiber.App) {
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{
 			"app_name": config.Env("APP_NAME"),
-			"environment": config.Get().APP_ENV,
+			"timestamp": time.Now().Unix(),
 		})
 	})
 

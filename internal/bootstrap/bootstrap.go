@@ -2,8 +2,7 @@ package bootstrap
 
 import (
 	"aolus-software/clean-gofiber/adapters/http/routes"
-	"aolus-software/clean-gofiber/config"
-	"aolus-software/clean-gofiber/database"
+	"aolus-software/clean-gofiber/internal/config"
 	"log"
 
 	"github.com/gofiber/fiber/v2"
@@ -38,12 +37,11 @@ func AppBootstrap() {
 		panic("Failed to ping database: " + err.Error())
 	}
 
-	log.Println("Database connected successfully")
+	redisConfig := config.NewRedisConfig(viper)
+	redisClient := redisConfig.NewRedisClient()
+	defer redisClient.Close()
 
-	// Run migrations
-	if err := database.RunMigrations(databaseConfig); err != nil {
-		log.Fatal("Failed to run migrations: " + err.Error())
-	}
+	log.Println("Redis connected successfully")
 
 	routes.SetupRoutes(app)
 
