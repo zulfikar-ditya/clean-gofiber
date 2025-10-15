@@ -14,8 +14,26 @@ func AppBootstrap() {
 	viper := config.NewViper()
 	appConfig := config.AppConfig(viper)
 
+	errorHandler := func(c *fiber.Ctx, err error) error {
+		code := fiber.StatusInternalServerError
+		if e, ok := err.(*fiber.Error); ok {
+			code = e.Code
+		}
+
+		// ignore other error (404, 403, 405, etc) only log 500 errors
+		if code == fiber.StatusInternalServerError {
+			log.Printf("Fiber error: %v", err)
+		}
+
+		return c.Status(code).JSON(fiber.Map{
+			"error":   err.Error(),
+			"status":  code,
+		})
+	}
+
 	app := fiber.New(fiber.Config{
-		AppName: appConfig.APP_NAME,
+		AppName:      appConfig.APP_NAME,
+		ErrorHandler: errorHandler,
 	})
 
 	databaseConfig := config.NewDatabaseConfig(viper)
@@ -40,8 +58,6 @@ func AppBootstrap() {
 	redisConfig := config.NewRedisConfig(viper)
 	redisClient := redisConfig.NewRedisClient()
 	defer redisClient.Close()
-
-	log.Println("Redis connected successfully")
 
 	routes.SetupRoutes(app)
 
